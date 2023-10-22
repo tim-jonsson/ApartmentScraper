@@ -40,7 +40,7 @@ with open('./settings.json', 'r') as file:
         channel = bot.get_channel(settings_dict["channel"])
         number_of_apartments = getAparmentNumbers()
         if(number_of_apartments != 0):
-            await channel.send(f"<@{settings_dict["user"]}> There are new apartments available ({number_of_apartments})!")
+            await channel.send(f"<@{settings_dict['user']}> There are new apartments available ({number_of_apartments})!")
 
     bot.run(token)
 
