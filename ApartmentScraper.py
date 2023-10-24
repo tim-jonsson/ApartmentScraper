@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands, tasks
 from bs4 import BeautifulSoup
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.service import Service
 from selenium import webdriver
 import time
 import re
@@ -12,12 +13,14 @@ with open('./settings.json', 'r') as file:
 
     options = FirefoxOptions()
     options.add_argument("--headless")
+    
+    driver = webdriver.Firefox( options=options)
+
     url = settings_dict["url"]
 
     token = settings_dict["token"]
 
     def getSoup():
-        driver = webdriver.Firefox(options=options)
         driver.get(url)
         time.sleep(10) # Wait until the JS has loaded.
         return BeautifulSoup(driver.page_source, features="lxml")
