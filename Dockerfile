@@ -24,14 +24,19 @@ RUN apt-get -qy --no-install-recommends install \
   && rm -rf /var/lib/apt/lists/*
 
 
-#================
-# Install Chrome
-#================
-RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list && \
-    apt-get -yqq update && \
-    apt-get -yqq install google-chrome-stable && \
-    rm -rf /var/lib/apt/lists/*
+#=================
+# Install Firefox
+#=================
+RUN apt-get -qy --no-install-recommends install \
+     $(apt-cache depends firefox | grep Depends | sed "s/.*ends:\ //" | tr '\n' ' ') \
+  && rm -rf /var/lib/apt/lists/* \
+  && cd /tmp \
+  && wget --no-check-certificate -O firefox-esr.tar.bz2 \
+    'https://download.mozilla.org/?product=firefox-esr-latest&os=linux64&lang=en-US' \
+  && tar -xjf firefox-esr.tar.bz2 -C /opt/ \
+  && ln -s /opt/firefox/firefox /usr/bin/firefox \
+  && rm -f /tmp/firefox-esr.tar.bz2
+
 
 #=======================
 # Update Python Version
@@ -50,6 +55,10 @@ RUN echo "export PYTHONIOENCODING=utf8" >> ~/.bashrc
 #=====================
 # Download WebDrivers
 #=====================
+RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
+RUN tar -xvzf geckodriver-v0.33.0-linux64.tar.gz
+RUN chmod +x geckodriver
+RUN mv geckodriver /usr/local/bin/
 RUN wget https://chromedriver.storage.googleapis.com/72.0.3626.69/chromedriver_linux64.zip
 RUN unzip chromedriver_linux64.zip
 RUN chmod +x chromedriver
